@@ -13,6 +13,7 @@ module Cinch
         super
         @owner_nick = config[:owner]
         @allow_op_msgs = config[:allow_op_msgs]
+        @has_ns = config[:server_has_nickserv]
       end
 
       def help
@@ -62,9 +63,9 @@ module Cinch
 
       def authed?(user)
         if @allow_op_msgs
-          (user.nick == @owner_nick || user.oper?) && user.authed?
+          (user.nick == @owner_nick || user.oper?) && (user.authed? || !@has_ns)
         else
-          user.nick == @owner_nick && user.authed?
+          user.nick == @owner_nick && (user.authed? || !@has_ns)
         end
       end
 
