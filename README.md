@@ -33,7 +33,7 @@ follwing message once it is connected to an IRC network:
 
 These commands will get you setup to run the stable version of Showbot.
 
- * `git clone https://github.com/rikai/Showbot.git`
+ * `git clone https://github.com/s0ph0s-2/Showbot.git`
  * `cd Showbot`
  * `bundle`
  * (Do the section below)
@@ -42,7 +42,7 @@ These commands will get you setup to run the stable version of Showbot.
 If you would like to run the development version of Showbot, use the following
 commands instead:
 
- * `git clone https://github.com/rikai/Showbot.git`
+ * `git clone https://github.com/s0ph0s-2/Showbot.git`
  * `cd Showbot`
  * `git checkout devel`
  * `bundle`
