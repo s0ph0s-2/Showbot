@@ -9,6 +9,12 @@ module Cinch
       match /say\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+(.*)/i, :method => :command_say # !say #channel I am a bot
       match /do\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+(.*)/i, :method => :command_do # !do ExampleUser cuddles
 
+      def initialize(*args)
+        super
+        @owner_nick = config[:owner]
+        @allow_op_msgs = config[:allow_op_msgs]
+      end
+
       def help
         [
           "!say — Echo back the arguments in a given channel or to a user.",
@@ -31,6 +37,10 @@ module Cinch
       end
 
       def command_say(m, dest, msg)
+        unless authed? m.user
+          m.user.send("Unfortunately, you're not allowed to make me talk.")
+          return
+        end
         if dest[1] == "#"
           Channel(dest).send(msg)
         else
@@ -39,10 +49,22 @@ module Cinch
       end
 
       def command_do(m, dest, action)
+        unless authed? m.user
+          m.user.send("Unfortunately, you're not allowed to make me do stuff.")
+          return
+        end
         if dest[1] == "#"
           Channel(dest).action(action)
         else
           User(dest).action(action)
+        end
+      end
+
+      def authed?(user)
+        if @allow_op_msgs
+          (user.nick == @owner_nick || user.oper?) && user.authed?
+        else
+          user.nick == @owner_nick && user.authed?
         end
       end
 
