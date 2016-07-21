@@ -12,6 +12,21 @@ module Cinch
         @has_ns = shared[:server_has_nickserv]
       end
 
+      def help
+        "!nowplaying/!np - Tell the channel what track is currently playing."
+      end
+
+      def help_nowplaying
+        [
+          help,
+          "Usage: !nowplaying #channel [--181] Some Artist - A Track"
+        ].join("\n")
+      end
+
+      def help_np
+        help_nowplaying
+      end
+
       def command_np(m, cmd, chan, artist, track)
         m.user.send("Only admins can ask me to do that.") and return unless authed? m.user
         m.user.send("You have to send me a PM to use this command.") and return if m.channel?
