@@ -4,6 +4,7 @@ module Cinch
       include Cinch::Plugin
       # command #channel The Artist [HYPHEN-MINUS,EN DASH,EM DASH] Some Track
       match /(np|nowplaying)\s+([#&][^\x07\x2C\s]{,200})\s+(.*)\s[-–—]\s(.*)/i, :method => :command_np
+      match /(np|nowplaying)\s+([#&][^\x07\x2C\s]{,200})\s+--181\s+(.*)\s[-–—]\s(.*)/i, :method => :command_np_181
 
       def initialize(*args)
         super
@@ -17,6 +18,13 @@ module Cinch
         m.user.send("You have to send me a PM to use this command.") and return if m.channel?
 
         Channel(chan).send("Now Playing on XBN: #{artist} — #{track}")
+      end
+
+      def command_np_181(m, cmd, chan, artist, track)
+        m.user.send("Only admins can ask me to do that.") and return unless authed? m.user
+        m.user.send("You have to send me a PM to use this command.") and return if m.channel?
+
+        Channel(chan).send("Now Playing on XBN: The Eagle at 181.FM (#{artist} — #{track})")
       end
 
       def authed?(user)
