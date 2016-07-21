@@ -3,6 +3,7 @@ require 'tzinfo'
 
 require './lib/models/shows'
 require './lib/models/calendar'
+require './lib/models/xbn_webscrape'
 
 module Cinch
   module Plugins
