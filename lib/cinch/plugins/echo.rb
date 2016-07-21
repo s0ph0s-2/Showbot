@@ -11,9 +11,9 @@ module Cinch
 
       def initialize(*args)
         super
-        @owner_nick = config[:owner]
-        @allow_op_msgs = config[:allow_op_msgs]
-        @has_ns = config[:server_has_nickserv]
+        @owner_nick = shared[:owner]
+        @allow_op_msgs = shared[:allow_op_msgs]
+        @has_ns = shared[:server_has_nickserv]
       end
 
       def help
