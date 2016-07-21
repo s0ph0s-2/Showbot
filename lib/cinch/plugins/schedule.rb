@@ -15,12 +15,10 @@ module Cinch
 
       match /next\s*$/i,    :method => :command_next      # !next
       match /next\s+(.+)/i, :method => :command_next      # !next <show>
-      match /schedule/i,    :method => :command_schedule  # !schedule
 
       def help
         [
           '!next - When\'s the next live show?',
-          '!schedule - What shows are being recorded live in the next seven days?'
         ].join "\n"
       end
 
@@ -28,13 +26,6 @@ module Cinch
         [
           '!next - When\'s the next live show?',
           'Usage: !next [show]'
-        ].join "\n"
-      end
-
-      def help_schedule
-        [
-          '!schedule - What shows are being recorded live in the next seven days?',
-          'Usage: !schedule'
         ].join "\n"
       end
 
@@ -141,21 +132,6 @@ module Cinch
         response << " in #{in_how_long(event, opts[:tz])}"
 
         m.reply response
-      end
-
-      # Replies with the schedule for the next 7 days of shows
-      def command_schedule(m)
-        if @events.empty?
-          m.user.send "No shows in the next week"
-          return
-        end
-
-        m.user.send "#{@events.length} upcoming show#{@events.length > 1 ? "s" : ""} in the next week"
-
-        # Push only the next 10 shows to avoid flooding
-        @events[0...10].each do |event|
-          m.user.send "  #{event.summary} on #{event.start_date_to_local_string} at #{event.start_time_to_local_string}"
-        end
       end
 
       protected
