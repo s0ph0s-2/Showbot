@@ -3,7 +3,7 @@ module Cinch
     class NowPlaying
       include Cinch::Plugin
       # command #channel The Artist [HYPHEN-MINUS,EN DASH,EM DASH] Some Track
-      match /(np|nowplaying)\s+([#&][^\x07\x2C\s]{,200})\s+(.*)\s?[-–—]\s?(.*)/i, :method => :command_np
+      match /(np|nowplaying)\s+([#&][^\x07\x2C\s]{,200})\s+(.*)\s[-–—]\s(.*)/i, :method => :command_np
 
       def initialize(*args)
         super
