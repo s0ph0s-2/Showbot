@@ -15,10 +15,12 @@ module Cinch
 
       match /next\s*$/i,    :method => :command_next      # !next
       match /next\s+(.+)/i, :method => :command_next      # !next <show>
+      match /news\s+([a-z]+)/i, :method => :command_news  # !news <show>
 
       def help
         [
           '!next - When\'s the next live show?',
+          '!news - What\'s the latest news for a given show?'
         ].join "\n"
       end
 
@@ -26,6 +28,13 @@ module Cinch
         [
           '!next - When\'s the next live show?',
           'Usage: !next [show]'
+        ].join "\n"
+      end
+
+      def help_news
+        [
+          '!news - What\'s the latest news for a given show?',
+          'Usage: !news [show]'
         ].join "\n"
       end
 
@@ -74,6 +83,10 @@ module Cinch
         rescue TZInfo::InvalidTimezoneIdentifier
           m.user.send 'That is not a valid timezone. For a list of valid time zones, please see http://en.wikipedia.org/wiki/List_of_tz_database_time_zones'
         end
+      end
+
+      # Get the news for a show
+      def command_news(m, show)
       end
 
       # Replies to the user with information about the next show
