@@ -25,15 +25,23 @@ module Cinch
       end
 
       def help
-        ""
+        "!chaptertag/!ct - Tell #{shared[:Bot_Nick]} when to record track announcements."
       end
 
       def help_chaptertag
-        ""
+        [
+          help,
+          "Usage: !chaptertag (start|stop|reset|save|last) [/path/to/save/at.json]",
+          "`!chaptertag start` starts the recording",
+          "`!chaptertag stop` stops the recording and saves the data to the path in the config",
+          "`!chaptertag reset` erases all stored information about chapters",
+          "`!chaptertag save [/place/to/save.json]` saves the data to the path in the config, or the path specified",
+          "`!chaptertag last` returns the last track name saved, but only when recording"
+        ].join("\n")
       end
 
       def help_ct
-        help_chaptertag
+        help_chaptertag.gsub("!chaptertag ","!ct ")
       end
 
       def command_chaptertag(m, command, verb, args)
