@@ -3,25 +3,26 @@ require 'tzinfo'
 
 require './lib/models/shows'
 require './lib/models/calendar'
-require './lib/models/xbn_webscrape'
 
 module Cinch
   module Plugins
     class Schedule
       include Cinch::Plugin
 
-      timer 600, :method => :refresh_calendar
+      timer 600, :method => :refresh_calendar_news
 
       listen_to :connect, :method => :on_connect
 
       match /next\s*$/i,    :method => :command_next      # !next
       match /next\s+(.+)/i, :method => :command_next      # !next <show>
-      match /news\s+([a-z]+)/i, :method => :command_news  # !news <show>
+      match /schedule/i,    :method => :command_schedule  # !schedule
+      match /news\s+([a-z]+)/i, :method => :command_news   # !news show
 
       def help
         [
           '!next - When\'s the next live show?',
-          '!news - What\'s the latest news for a given show?'
+          '!schedule - What shows are being recorded live in the next seven days?',
+          '!news - What\'s the latest news for a show?'
         ].join "\n"
       end
 
@@ -32,10 +33,17 @@ module Cinch
         ].join "\n"
       end
 
+      def help_schedule
+        [
+          '!schedule - What shows are being recorded live in the next seven days?',
+          'Usage: !schedule'
+        ].join "\n"
+      end
+
       def help_news
         [
-          '!news - What\'s the latest news for a given show?',
-          'Usage: !news [show]'
+          '!news - What\'s the latest news for a show?',
+          'Usage: !news show'
         ].join "\n"
       end
 
@@ -43,18 +51,20 @@ module Cinch
         super
         @calendar = Calendar.new(config)
         @events = []
+        @reader = RSS::RSSReader.new config
       end
 
       # A method called on connection to an IRC server
       # Use to call any additional initialization
       def on_connect(m)
-        refresh_calendar
+        refresh_calendar_news
       end
 
       # Pulls in the latest calendar events and stores them in @events
       # Called by a timer to keep up to date with the calendar
-      def refresh_calendar
+      def refresh_calendar_news
         @events = @calendar.events
+        @reader.refresh
       end
 
       def command_next(m, opts = '')
@@ -86,8 +96,11 @@ module Cinch
         end
       end
 
-      # Get the news for a show
       def command_news(m, show)
+        m.user.send("Sorry, but you have to tell me what show you want!") if show == ""
+
+        show_symbol = Shows.find_show(show)
+        m.reply(@reader.feeds[show_symbol].latest)
       end
 
       # Replies to the user with information about the next show
@@ -146,6 +159,21 @@ module Cinch
         response << " in #{in_how_long(event, opts[:tz])}"
 
         m.reply response
+      end
+
+      # Replies with the schedule for the next 7 days of shows
+      def command_schedule(m)
+        if @events.empty?
+          m.user.send "No shows in the next week"
+          return
+        end
+
+        m.user.send "#{@events.length} upcoming show#{@events.length > 1 ? "s" : ""} in the next week"
+
+        # Push only the next 10 shows to avoid flooding
+        @events[0...10].each do |event|
+          m.user.send "  #{event.summary} on #{event.start_date_to_local_string} at #{event.start_time_to_local_string}"
+        end
       end
 
       protected
