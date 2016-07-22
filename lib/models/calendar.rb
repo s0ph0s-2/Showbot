@@ -1,6 +1,8 @@
 require 'google/api_client'
 require 'chronic_duration'
 require 'tzinfo'
+require './lib/models/shows'
+require './lib/models/timehash'
 
 # The Calendar module provides access to remote calendars to JBot plugins. It
 # currently pulls events from a Google Calendar as the default backend. The
@@ -45,23 +47,24 @@ module Calendar
   # TODO: Right now, this errors out on missing/invalid config. It should
   #   instead return a NullCalendar object that returns no events.
   def self.new(config = {})
-    google_config = {
-      :app_name => config[:app_name],
-      :app_version => config[:app_version],
-      :calendar_id => config[:calendar_id],
-      :api_key => config[:api_key]
-    }
+    # google_config = {
+    #   :app_name => config[:app_name],
+    #   :app_version => config[:app_version],
+    #   :calendar_id => config[:calendar_id],
+    #   :api_key => config[:api_key]
+    # }
 
-    google_client = Google::APIClient.new(
-      :application_name => google_config[:app_name],
-      :application_version => google_config[:app_version],
-      :key => google_config[:api_key],
-      :authorization => nil
-    )
+    # google_client = Google::APIClient.new(
+    #   :application_name => google_config[:app_name],
+    #   :application_version => google_config[:app_version],
+    #   :key => google_config[:api_key],
+    #   :authorization => nil
+    # )
 
-    google_api = google_client.discovered_api('calendar', 'v3')
+    # google_api = google_client.discovered_api('calendar', 'v3')
 
-    GoogleCalendar.new(google_config, google_client, google_api)
+    # GoogleCalendar.new(google_config, google_client, google_api)
+    XBNCalendar.new(config)
   end
 
   # The Calendar::GoogleCalendar class provides the default backend for Calendar
@@ -106,6 +109,30 @@ module Calendar
         summary = event.summary.gsub(/^LIVE:\s+/, '')
         CalendarEvent.new(summary, event.start.date_time, event.end.date_time)
       end
+    end
+  end
+
+  # The XBNCalendar class provides an alternate backend for Calendar. Instead
+  # of connecting to a Google Calendar, it utilizes information provided by a
+  # NetTimeHash, which holds Times scraped from webpages.
+  class XBNCalendar
+    # Create the NetTimeHash
+    def initialize(config = {})
+      @countdowns = NetTimeHash::NetTimeHash.new config
+    end
+
+    # Get the next show time for each show being tracked.
+    # Returns an array of CalendarEvent objects, sorted by ascending time
+    def events
+      @countdowns.refresh
+      events = []
+      @countdowns.times.each do |id, show_time|
+        events << CalendarEvent.new(
+          Shows.find_show(id.to_s),
+          show_time.latest,
+          show_time.latest + (60*60*3))
+      end
+      events.sort! {|a,b| b.start_time <=> a.start_time}
     end
   end
 
