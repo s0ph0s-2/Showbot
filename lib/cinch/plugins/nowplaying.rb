@@ -3,7 +3,7 @@ module Cinch
     class NowPlaying
       include Cinch::Plugin
       # command #channel The Artist [HYPHEN-MINUS,EN DASH,EM DASH] Some Track
-      match /(np|nowplaying)\s+([#&][^\x07\x2C\s]{,200})\s+(.*)\s[-–—]\s(.*)/i, :method => :command_np
+      match /(np)\s+([#&][^\x07\x2C\s]{,200})\s+(.*)\s[-–—]\s(.*)/i, :method => :command_np
 
       def initialize(*args)
         super
@@ -13,18 +13,14 @@ module Cinch
       end
 
       def help
-        "!nowplaying/!np - Tell the channel what track is currently playing."
-      end
-
-      def help_nowplaying
-        [
-          help,
-          "Usage: !nowplaying #channel [--181] Some Artist - A Track"
-        ].join("\n")
+        "!np - Tell the channel what track is currently playing."
       end
 
       def help_np
-        help_nowplaying
+        [
+          help,
+          "Usage: !np #channel [--181] Some Artist - A Track"
+        ].join("\n")
       end
 
       def command_np(m, cmd, chan, artist, track)
