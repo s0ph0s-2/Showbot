@@ -125,12 +125,15 @@ module Calendar
     # Returns an array of CalendarEvent objects, sorted by ascending time
     def events
       events = []
+      now = Time.now
       @countdowns.times.each do |id, show_time|
+        # Prevents extra refreshes
+        latest_time = show_time.latest
         events << CalendarEvent.new(
           Shows.find_show(id.to_s).title,
-          show_time.latest,
-          show_time.latest + (60*60*3)
-        )
+          latest_time,
+          latest_time + (60*60*3)
+        ) unless (latest_time - now) > (60*60*24*7)
       end
       events.sort! {|a,b| a.start_time <=> b.start_time}
     end
