@@ -4,31 +4,37 @@ require 'nokogiri'
 
 # This module contains three related classes: RSSReader, RSSFeed, and RSSItem.
 module RSS
-  # RSSReader is an object which contains RSSFeeds and exposes one method:
-  # RSSReader#latest(show)
-  # This method fetches the latest item from the feed specified in show and
-  # returns it as an RSSItem
+  # RSSReader is an object which contains RSSFeeds, exposes one method, and
+  # has one property
+  # RSSReader#refresh - iteratively calls fetch_latest on its RSSFeeds
+  # RSSReader.feeds - a hash of the RSSFeeds this Reader contains
   class RSSReader
+    attr_reader :feeds
     def initialize(config = {})
-      @feeds = Hash.new()
+      @feeds = Hash.new
       config[:feeds].each do |id, url|
         @feeds[id] = RSSFeed.new(id, url)
       end
     end
 
-    def latest(show)
-      @feeds[show].fetch_latest
+    def refresh
+      @feeds.each_value do |feed|
+        feed.fetch_latest
+      end
     end
   end
 
-  # RSSFeed is an object which creates RSSItems and exposes one method:
-  # RSSFeed#fetch_latest
-  # This method fetches the latest item from the feed and returns it as an
-  # RSSItem
+  # RSSFeed is an object which creates RSSItems, exposes one method, and has
+  # one property:
+  # RSSFeed#fetch_latest - Fetch the latest item and save it
+  # RSSFeed.latest - The latest RSSItem
   class RSSFeed
+    attr_reader :latest
     def initialize(id, url)
       @id = id
       @url = url
+      @latest = nil
+      fetch_latest
     end
 
     def fetch_latest
@@ -36,7 +42,7 @@ module RSS
         feed = RSS::Parser.parse(rss)
         latest = feed.items.first
         # Surprisingly, latest.pubDate is already a Time.
-        RSSItem.new(latest.title, latest.pubDate, latest.content_encoded)
+        @latest = RSSItem.new(latest.title, latest.pubDate, latest.content_encoded)
       end
     end
   end
