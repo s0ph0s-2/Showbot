@@ -132,7 +132,7 @@ module Calendar
           show_time.latest + (60*60*3)
         )
       end
-      events.sort! {|a,b| b.start_time <=> a.start_time}
+      events.sort! {|a,b| a.start_time <=> b.start_time}
     end
   end
 
