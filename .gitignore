@@ -12,6 +12,7 @@ cinchize.yml
 *.log
 *.sql
 *.sqlite
+*.lock
 
 # Temporary Things #
 ####################
