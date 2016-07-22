@@ -16,7 +16,9 @@ module Cinch
       match /next\s*$/i,    :method => :command_next      # !next
       match /next\s+(.+)/i, :method => :command_next      # !next <show>
       match /schedule/i,    :method => :command_schedule  # !schedule
-      match /news\s+([a-z]+)/i, :method => :command_news   # !news show
+      # This matches permissively because it lets the bot prompt the user
+      # if the don't include a show slug
+      match /news(.*)/i, :method => :command_news   # !news show
 
       def help
         [
