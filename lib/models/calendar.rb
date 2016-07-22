@@ -127,7 +127,7 @@ module Calendar
       events = []
       @countdowns.times.each do |id, show_time|
         events << CalendarEvent.new(
-          Shows.find_show(id.to_s),
+          Shows.find_show(id.to_s).title,
           show_time.latest,
           show_time.latest + (60*60*3)
         )
