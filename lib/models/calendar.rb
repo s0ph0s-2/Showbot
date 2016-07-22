@@ -124,13 +124,13 @@ module Calendar
     # Get the next show time for each show being tracked.
     # Returns an array of CalendarEvent objects, sorted by ascending time
     def events
-      @countdowns.refresh
       events = []
       @countdowns.times.each do |id, show_time|
         events << CalendarEvent.new(
           Shows.find_show(id.to_s),
           show_time.latest,
-          show_time.latest + (60*60*3))
+          show_time.latest + (60*60*3)
+        )
       end
       events.sort! {|a,b| b.start_time <=> a.start_time}
     end
