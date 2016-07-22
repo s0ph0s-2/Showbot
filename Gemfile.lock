@@ -392,6 +392,3 @@ DEPENDENCIES
   tzinfo
   tzinfo-data
   whenever
-
-BUNDLED WITH
-   1.11.2
