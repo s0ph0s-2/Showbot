@@ -2,7 +2,7 @@
 .qstart “
 .title_container{"data-sg-id" => suggestion.id}
   .votes_container
-    .votes=link_and_vote_count(suggestion, request.ip)
+    .votes=link_and_vote_count(suggestion, env["HTTP_X_REAL_IP"])
     .subtitle=t(:subtitle, :scope => [:views, :suggestion, :_bubble], :count => suggestion.votes_counter)
   .title=h suggestion.title
 .qend ”

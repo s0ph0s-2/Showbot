@@ -2,7 +2,7 @@
   %td.cluster-votes=suggestion.total_for_cluster
 - else
   %td
-%td.votes=link_and_vote_count(suggestion, request.ip)
+%td.votes=link_and_vote_count(suggestion, env["HTTP_X_REAL_IP"])
 %td.title
   =h suggestion.title
   - if suggestion.top_of_cluster? and suggestion.cluster_id
