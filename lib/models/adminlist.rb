@@ -1,8 +1,8 @@
 class AdminList
     @@initialized = false
     @@admins = []
-    def self.initialize(options)
-        @@admins = options[:admins]
+    def self.initialize(ary)
+        @@admins = ary
         @@initialized = true
     end
 

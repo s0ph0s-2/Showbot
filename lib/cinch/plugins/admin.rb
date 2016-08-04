@@ -1,4 +1,5 @@
 # Admin commands for the bot
+require './lib/models/adminlist'
 
 module Cinch
   module Plugins
@@ -19,13 +20,13 @@ module Cinch
 
       def initialize(*args)
         super
-        @admins = Array(config[:admins])
+        @admins = AdminList.initialize(config[:admins])
         @data_json = DataJSON.new config[:data_json]
         @do_client = DropletKit::Client.new(access_token: ENV['DO_API_KEY']) if ENV['DO_API_KEY']
       end
 
       def command_join(m, channel)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized to invite the bot.'
           return
         end
@@ -34,7 +35,7 @@ module Cinch
       end
 
       def command_leave(m, channel)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized to make the bot leave.'
           return
         end
@@ -43,7 +44,7 @@ module Cinch
       end
 
       def command_show_list(m)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized to start a show.'
           return
         end
@@ -55,7 +56,7 @@ module Cinch
       end
 
       def command_start_show(m, show_slug)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized to start a show.'
           return
         end
@@ -79,7 +80,7 @@ module Cinch
       end
 
       def command_end_show(m)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized to end a show.'
           return
         end
@@ -106,7 +107,7 @@ module Cinch
       # Admin command that tells the bot to exit
       # !exit
       def command_exit(m)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send "You are not authorized to exit #{shared[:Bot_Nick]}."
           return
         end
@@ -128,7 +129,7 @@ module Cinch
       end
 
       def command_droplet_list(m)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized for droplet access.'
           return
         end
@@ -149,7 +150,7 @@ module Cinch
       end
 
       def command_droplet_start(m, name)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized for droplet access.'
           return
         end
@@ -163,7 +164,7 @@ module Cinch
       end
 
       def command_droplet_stop(m, name)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized for droplet access.'
           return
         end
@@ -177,7 +178,7 @@ module Cinch
       end
 
       def command_droplet_shutdown(m, name)
-        if !authed? m.user
+        if @admins.authed? m.user
           m.user.send 'You are not authorized for droplet access.'
           return
         end
@@ -192,13 +193,6 @@ module Cinch
 
       private
 
-      # Is a user an authorized user?
-      # The user must be in the list of admins from the config file, and must
-      # also be authenticated to NickServ.
-      # param user: (Cinch::User) The user
-      def authed?(user)
-        @admins.include?(user.nick) && user.authed?
-      end
     end
   end
 end
