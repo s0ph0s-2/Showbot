@@ -2,8 +2,12 @@ class QuoteList
   def initialize(config)
     unless config[:quotes_file].nil?
       @quotes_path = File.join File.dirname(__FILE__), "../../#{config[:quotes_file]}"
-      @quotes = YAML.load_file @quotes_path
       @can_save = true
+      begin
+        @quotes = YAML.load_file @quotes_path
+      rescue Errno::ENOENT
+        save_to_disk true
+      end
     else
       warn "Quotes file was nil. QUOTE CHANGES WILL NOT BE SAVED!"
       @can_save = false
@@ -69,7 +73,7 @@ class QuoteList
     end
   end
 
-  def save_to_disk
-    File.open(@quotes_path, "w") {|file| file.write(@quotes.to_yaml)} if @can_save
+  def save_to_disk(skeleton = false)
+    File.open(@quotes_path, "w") {|file| file.write(skeleton ? "# See quotes.yml.example for what goes here." : @quotes.to_yaml)} if @can_save
   end
 end
