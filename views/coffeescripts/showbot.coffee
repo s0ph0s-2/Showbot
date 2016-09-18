@@ -68,6 +68,7 @@ setup_voting = ->
         )
 
         update_local_votes(response, $link, $vote_count)
+        force_resort($vote_count.closest('table'))
 
     , "json").error(->
       $vote_count.removeClass('voted')

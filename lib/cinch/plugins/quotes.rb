@@ -1,75 +1,69 @@
 module Cinch
   module Plugins
     class Quotes
-      include Cinch::Plugin
+      include Auth::AdminPlugin
 
-      match /quote\s+(.+)/i,  :method => :command_quote
-      match /([^\s]+)/i,      :method => :command_quote
+      match /quote\s+(.+)/i, :method => :command_quote
+      match /([^\s]+)/i,     :method => :command_quote
+      [{
+        # This pattern matches /quote add <nick> <quote with spaces>
+        :pattern => /quote\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+(.+)/i,
+        :method => :command_quote_add,
+        :unauthorized_msg => "You are not authorized to add a quote."
+      },
+      {
+        # Matches /quote del <nick> <quote with spaces>
+        :pattern => /quote\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+(.+)/i,
+        :method => :command_quote_del,
+        :unauthorized_msg => "You are not authorized to delete a quote."
+      },
+      {
+        # Matches /quote alias add <original> <alias>
+        :pattern => /quote\s+alias\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)/i,
+        :method => :command_alias_add,
+        :unauthorized_msg => "You are not authorized to add an alias."
+      },
+      {
+        # Matches /quote alias del <original> <alias>
+        :pattern => /quote\s+alias\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)/i,
+        :method => :command_alias_del,
+        :unauthorized_msg => "You are not authorized to delete an alias."
+      }].each do |m|
+        admin_match m[:pattern], {
+          :method => m[:method],
+          :unauthorized_msg => m[:unauthorized_msg]
+        }
+      end
 
       def initialize(*args)
         super
         @quote_list = QuoteList.new(config)
-        @owner_nick = shared[:owner]
-        @has_ns = shared[:server_has_nickserv]
-        @allow_op_msgs = shared[:allow_op_msgs]
       end
 
       def command_quote(m, name)
-        if name.start_with?("add ","del ", "alias ") || name == "dump"
-          m.user.send("You have to be an admin to use that command.") and return unless authed? m.user
-
-          command = name.split(" ")
-          case command.first
-          when "add"
-            add_quote(m, command)
-          when "del"
-            del_quote(m, command)
-          when "dump"
-            debug @quote_list.quotes.to_s
-          when "alias"
-            m.user.send("Alias commands require four arguments.") and return if command.length != 4
-            case command[1]
-            when "add"
-              add_alias(m, command)
-            when "del"
-              del_alias(m, command)
-            end
-          end
-        else
-          m.reply @quote_list.quote_for name
-        end
+        m.reply @quote_list.quote_for name
       end
 
       private
 
-      def add_quote(m, command)
-        m.user.send("I need more arguments for that command.") and return if command.length < 3
-        @quote_list.add(command[1], command[2..-1].join(" "))
+      def command_quote_add(m, name, quote)
+        @quote_list.add(name, quote)
         m.reply("Quote added!")
       end
 
-      def del_quote(m, command)
-        m.user.send("I need more arguments for that command.") and return if command.length < 3
-        @quote_list.del(command[1], command[2..-1].join(" "))
+      def command_quote_del(m, name, quote)
+        @quote_list.del(name, quote)
         m.reply("Quote removed!")
       end
 
-      def add_alias(m, command)
-        @quote_list.add_alias(command[2], command[3])
+      def command_alias_add(m, original, alias_name)
+        @quote_list.add_alias(original, alias_name)
         m.reply("Alias added!")
       end
 
-      def del_alias(m, command)
-        @quote_list.del_alias(command[2], command[3])
+      def command_alias_del(m, original, alias_name)
+        @quote_list.del_alias(original, alias_name)
         m.reply("Alias removed!")
-      end
-
-      def authed?(user)
-        if @allow_op_msgs
-          (user.nick == @owner_nick || user.oper?) && (user.authed? || !@has_ns)
-        else
-          user.nick == @owner_nick && (user.authed? || !@has_ns)
-        end
       end
     end
   end

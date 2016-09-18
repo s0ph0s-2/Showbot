@@ -51,7 +51,7 @@ module Cinch
       end
 
       def command_mumble(m)
-        m.user.send 'Mumble info - Server: mumble.jupitercolony.com, Port: 64734'
+        m.user.send 'Mumble info - Server: mumble.jupiterbroadcasting.org, Port: 64734'
       end
     end
   end

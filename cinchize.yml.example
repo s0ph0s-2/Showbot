@@ -7,6 +7,12 @@ live_hosts: &live_hosts
   Live_Url: "example.com/live"
   Sinatra_Url: "http://www.example.com"
 
+auth_admin:
+  admins:
+    - "ChrisLAS"
+    - "KernelLinux"
+    - "rikai"
+
 # Plugins used for all configs
 plugins: &plugins
   plugins:
@@ -16,8 +22,8 @@ plugins: &plugins
     class: "Cinch::Plugins::Admin"
     options:
       :data_json: "local/path/to/data.json"
-      :admins:
-        - "YourNickHere"
+  -
+    class: "Cinch::Plugins::DigitalOcean"
   -
     class: "Cinch::Plugins::Bacon"
   -
