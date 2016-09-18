@@ -17,7 +17,7 @@ class QuoteList
   def quote_for(name)
     canonical_name = canonicalize name
     return '' if !canonical_name
-    @quotes[canonical_name][:quotes].sample
+    @quotes[canonical_name][:quotes].shuffle.sample
   end
 
   def add(name, quote)
