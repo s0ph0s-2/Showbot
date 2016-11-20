@@ -37,7 +37,7 @@ module NetTimeHash
     # using BeautifulSoup and requests is 16 lines.
     def latest
       n = Nokogiri::HTML(open(@uri))
-      Time.parse(n.css("#countdown").text)
+      Time.at(n.css(".countdown-clock").attribute("data-date").value.to_i/1000)
     end
   end
 end
