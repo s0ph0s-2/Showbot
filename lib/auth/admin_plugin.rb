@@ -18,7 +18,7 @@ module Auth
 
           if !message.user.authed?
             message.user.send AdminPlugin::UNREGISTERED_MSG
-          if AdminPlugin.is_admin? message.user
+          elsif AdminPlugin.is_admin? message.user
             self.send(user_method, *args) # self == Plugin::Class instance
           else
             unauthorized_msg = if options.key?(:unauthorized_msg) then
