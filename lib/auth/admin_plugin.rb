@@ -16,8 +16,8 @@ module Auth
         self.send(:define_method, admin_method) do |*args| # self == Plugin::Class
           message = args[0]
 
-#           if !message.user.authed?
-#             message.user.send AdminPlugin::UNREGISTERED_MSG
+          if !message.user.authed?
+            message.user.send AdminPlugin::UNREGISTERED_MSG
           if AdminPlugin.is_admin? message.user
             self.send(user_method, *args) # self == Plugin::Class instance
           else
