@@ -42,9 +42,14 @@ module Calendar
   # and is embedded in your calendar's URLs. The api_key must be obtained from
   # Google through their API Console at https://code.google.com/apis/console
   #
-  # TODO: Right now, this errors out on missing/invalid config. It should
-  #   instead return a NullCalendar object that returns no events.
   def self.new(config = {})
+    # Return a NullCalendar if the config doesn't have all of the keys that are
+    # necessary to create a GoogleCalendar
+    return NullCalendar.new unless (config.has_key? :api_key and
+            config.has_key? :calendar_id and
+            config.has_key? :app_name and
+            config.has_key? :app_version)
+
     # Configure the client options of this Google API Client. Specifically, set
     # the app name and version as per the configuration hash.
     client_options = Google::Apis::ClientOptions.default.dup
@@ -66,6 +71,14 @@ module Calendar
     cal_service.request_options = request_options
 
     GoogleCalendar.new(config[:calendar_id], cal_service)
+  end
+
+  # A NullCalendar that returns no events, for use when an invalid configuration
+  # is given to this module's constructor.
+  class NullCalendar
+    def events
+        return []
+    end
   end
 
   # The Calendar::GoogleCalendar class provides the default backend for Calendar
