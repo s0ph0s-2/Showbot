@@ -53,7 +53,7 @@ module Cinch
         super
         @calendar = Calendar.new(config)
         @events = []
-        @reader = RSS::RSSReader.new config
+        @reader = JSONFeed::Reader.new config
       end
 
       # A method called on connection to an IRC server
