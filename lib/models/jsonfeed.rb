@@ -10,7 +10,7 @@ module JSONFeed
     # Reader#refresh - iteratively calls fetch_latest on its Feeds
     # Reader.feeds - a hash of the Feeds this Reader contains
     class Reader
-        addr_reader :feeds
+        attr_reader :feeds
         def initialize(config = {})
             @feeds = Hash.new
             config[:feeds].each do |id, url|
@@ -34,20 +34,23 @@ module JSONFeed
         def initialize(id, url)
             @id = id
             @url = url
-            @latest = null
+            @latest = nil
             fetch_latest
         end
 
         def fetch_latest
             open(@url) do |jsondata|
-                feed = JSON.parse(jsondata)
+                feed = JSON.load(jsondata)
                 latest = feed["items"][0]
                 @latest = Item.new(
                     latest["title"],
-                    DateTime.parse(latest["date_published"]),
+                    # Parses the time according to ISO8601
+                    # (YYYY-MM-DDTHH:mm:ss+tz)
+                    DateTime.rfc3339(latest["date_published"]),
                     latest["content_html"]
                 )
             end
+        end
     end
 
     # A data storage object that stores three key pieces of information about an

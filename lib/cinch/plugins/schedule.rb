@@ -101,8 +101,13 @@ module Cinch
       def command_news(m, show)
         m.user.send("Sorry, but you have to tell me what show you want!") if show == ""
 
-        show_symbol = Shows.find_show(show)
-        m.reply(@reader.feeds[show_symbol].latest)
+        show_symbol = Shows.find_show(show.strip)
+        if show_symbol.nil?
+            m.reply("Sorry, I can't find that show!")
+        else
+            show_symbol = show_symbol.url.to_sym
+            m.reply(print_show(@reader.feeds[show_symbol].latest, show_symbol))
+        end
       end
 
       # Replies to the user with information about the next show
@@ -214,6 +219,10 @@ module Cinch
         end.select do |event|
           event.after? Time.now
         end.first
+      end
+      def print_show(rssitem, id)
+        show_name = Shows.find_show_title(id.to_s)
+        "The most recent news from #{show_name} was posted on #{rssitem.date.strftime("%0F")}. #{rssitem.title}: #{rssitem.body}".gsub(/\n/, " ")
       end
     end
   end
