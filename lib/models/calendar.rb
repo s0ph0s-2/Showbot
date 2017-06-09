@@ -180,7 +180,7 @@ module Calendar
 
     # Convert start date to local string
     def start_date_to_local_string(tz = TZInfo::Timezone.get('UTC'))
-      tz.strftime("%A, %-m/%-d/%Y", start_time.utc)
+      tz.strftime("%A, %Y-%m-%d", start_time.utc)
     end
 
     # Convert start time to local string
