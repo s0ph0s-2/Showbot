@@ -94,6 +94,8 @@ servers:
   network_test:
     <<: *network_base
     nick: botname_test
+    messages_per_second: 1
+    server_queue_size: 5
     channels:
       - "#cinch-bots"
     shared:
@@ -103,6 +105,8 @@ servers:
   network_live:
     <<: *network_base
     nick: botname
+    messages_per_second: 1
+    server_queue_size: 5
     channels:
       - "#cinch-bots"
     shared:
