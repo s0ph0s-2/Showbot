@@ -30,6 +30,16 @@ describe Calendar::GoogleCalendar do
   end
 end
 
+describe Calendar::NullCalendar do
+  before(:example) do
+    @null_calendar = Calendar::NullCalendar.new
+  end
+
+  it 'returns an empty list of events' do
+    expect(@null_calendar.events).to be_empty
+  end
+end
+
 describe Calendar::CalendarEvent do
   before(:context) do
     @event = Calendar::CalendarEvent.new(
