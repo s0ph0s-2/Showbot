@@ -6,8 +6,8 @@ module Cinch
       # Per RFC 2812, nicks are [A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{0,8}
       #               chans are [#&][^\x07\x2C\s]{,200}
       # My particular server is configured to permit nicks up to 40 chars.
-      match /say\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+(.*)/i, :method => :command_say # !say #channel I am a bot
-      match /do\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+(.*)/i, :method => :command_do # !do ExampleUser cuddles
+      match /say\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+([^[:cntrl:]]+)/i, :method => :command_say # !say #channel I am a bot
+      match /do\s+([A-z_\-\[\]\\^{}|`][A-z0-9_\-\[\]\\^{}|`]{1,39}|[#&][^\x07\x2C\s]{,200})\s+([^[:cntrl:]]+)/i, :method => :command_do # !do ExampleUser cuddles
 
       def initialize(*args)
         super

@@ -17,9 +17,9 @@ gem 'excon', '~> 0.17.0'
 gem 'mail', '~> 2.5.0'
 
 # Web
-gem 'sinatra'
-gem 'sinatra-reloader'
+gem 'sinatra', '< 2.0.0'
 gem 'sinatra-websocket'
+gem 'sinatra-reloader'
 gem 'thin'
 gem 'haml'
 gem 'sass'
@@ -61,10 +61,11 @@ group :development do
   gem 'dm-sqlite-adapter'
   gem 'foreman'
   gem 'rb-fsevent'
+#  gem 'irbtools-more', '~> 2.0'
+  gem 'did_you_mean', '~> 0.9'
+  gem 'faraday', '0.9.2'
 end
 
 group :test do
   gem 'rack-test', require: false
 end
-
-

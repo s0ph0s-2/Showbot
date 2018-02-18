@@ -7,25 +7,25 @@ module Cinch
       match /([^\s]+)/i,     :method => :command_quote
       [{
         # This pattern matches /quote add <nick> <quote with spaces>
-        :pattern => /quote\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+(.+)/i,
+        :pattern => /quote\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)\s+(.+)/i,
         :method => :command_quote_add,
         :unauthorized_msg => "You are not authorized to add a quote."
       },
       {
         # Matches /quote del <nick> <quote with spaces>
-        :pattern => /quote\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+(.+)/i,
+        :pattern => /quote\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)\s+(.+)/i,
         :method => :command_quote_del,
         :unauthorized_msg => "You are not authorized to delete a quote."
       },
       {
         # Matches /quote alias add <original> <alias>
-        :pattern => /quote\s+alias\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)/i,
+        :pattern => /quote\s+alias\s+add\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)/i,
         :method => :command_alias_add,
         :unauthorized_msg => "You are not authorized to add an alias."
       },
       {
         # Matches /quote alias del <original> <alias>
-        :pattern => /quote\s+alias\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}]+)/i,
+        :pattern => /quote\s+alias\s+del\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)\s+([a-z][a-z0-9\-\[\]\\`\^\{\}_]+)/i,
         :method => :command_alias_del,
         :unauthorized_msg => "You are not authorized to delete an alias."
       }].each do |m|
