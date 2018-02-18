@@ -1,6 +1,8 @@
 require 'google/apis/calendar_v3'
 require 'chronic_duration'
 require 'tzinfo'
+require './lib/models/shows'
+require './lib/models/timehash'
 
 # The Calendar module provides access to remote calendars to JBot plugins. It
 # currently pulls events from a Google Calendar as the default backend. The
@@ -43,34 +45,35 @@ module Calendar
   # Google through their API Console at https://code.google.com/apis/console
   #
   def self.new(config = {})
-    # Return a NullCalendar if the config doesn't have all of the keys that are
-    # necessary to create a GoogleCalendar
-    return NullCalendar.new unless (config.has_key? :api_key and
-            config.has_key? :calendar_id and
-            config.has_key? :app_name and
-            config.has_key? :app_version)
-
-    # Configure the client options of this Google API Client. Specifically, set
-    # the app name and version as per the configuration hash.
-    client_options = Google::Apis::ClientOptions.default.dup
-    client_options.application_name = config[:app_name]
-    client_options.application_version = config[:app_version]
-
-    # Configure the request options of this Google API Client. Specifically,
-    # this is where we'll set up OAuth, if we ever implement it. For now, this
-    # can stay commented out -- it just does the default as it is.
-    request_options = Google::Apis::RequestOptions.default.dup
-    # request_options.authorization = nil
-
-    # Create a CalendarService API client to read a Google Calendar.
-    cal_service = Google::Apis::CalendarV3::CalendarService.new
-    # Configure the API key
-    cal_service.key = config[:api_key]
-    # And the client and request options from above
-    cal_service.client_options = client_options
-    cal_service.request_options = request_options
-
-    GoogleCalendar.new(config[:calendar_id], cal_service)
+#     # Return a NullCalendar if the config doesn't have all of the keys that are
+#     # necessary to create a GoogleCalendar
+#     return NullCalendar.new unless (config.has_key? :api_key and
+#             config.has_key? :calendar_id and
+#             config.has_key? :app_name and
+#             config.has_key? :app_version)
+# 
+#     # Configure the client options of this Google API Client. Specifically, set
+#     # the app name and version as per the configuration hash.
+#     client_options = Google::Apis::ClientOptions.default.dup
+#     client_options.application_name = config[:app_name]
+#     client_options.application_version = config[:app_version]
+# 
+#     # Configure the request options of this Google API Client. Specifically,
+#     # this is where we'll set up OAuth, if we ever implement it. For now, this
+#     # can stay commented out -- it just does the default as it is.
+#     request_options = Google::Apis::RequestOptions.default.dup
+#     # request_options.authorization = nil
+# 
+#     # Create a CalendarService API client to read a Google Calendar.
+#     cal_service = Google::Apis::CalendarV3::CalendarService.new
+#     # Configure the API key
+#     cal_service.key = config[:api_key]
+#     # And the client and request options from above
+#     cal_service.client_options = client_options
+#     cal_service.request_options = request_options
+# 
+#     GoogleCalendar.new(config[:calendar_id], cal_service)
+    XBNCalendar.new(config)
   end
 
   # A NullCalendar that returns no events, for use when an invalid configuration
@@ -111,6 +114,33 @@ module Calendar
         summary = event.summary.gsub(/^LIVE:\s+/, '')
         CalendarEvent.new(summary, event.start.date_time, event.end.date_time)
       end
+    end
+  end
+
+  # The XBNCalendar class provides an alternate backend for Calendar. Instead
+  # of connecting to a Google Calendar, it utilizes information provided by a
+  # NetTimeHash, which holds Times scraped from webpages.
+  class XBNCalendar
+    # Create the NetTimeHash
+    def initialize(config = {})
+      @countdowns = NetTimeHash::NetTimeHash.new config
+    end
+
+    # Get the next show time for each show being tracked.
+    # Returns an array of CalendarEvent objects, sorted by ascending time
+    def events
+      events = []
+      now = Time.now
+      @countdowns.times.each do |id, show_time|
+        # Prevents extra refreshes
+        latest_time = show_time.latest
+        events << CalendarEvent.new(
+          Shows.find_show(id.to_s).title,
+          latest_time,
+          latest_time + (60*60*3)
+        ) unless (latest_time - now) > (60*60*24*7)
+      end
+      events.sort! {|a,b| a.start_time <=> b.start_time}
     end
   end
 

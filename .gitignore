@@ -15,6 +15,7 @@ public/shows.json.xbn
 *.log
 *.sql
 *.sqlite
+*.lock
 
 # Temporary Things #
 ####################

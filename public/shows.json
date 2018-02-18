@@ -1,85 +1,22 @@
 {
 	"shows": [
-	        {
-        	        "rss":"http://feeds.feedburner.com/BsdNowHd",
-                	"url": "bn",
-                	"title": "BSD Now"
-	        },
-        	{
-                	"rss":"http://feeds.feedburner.com/coderradiovideo",
-	                "url": "cr",
-        	        "title": "Coder Radio"
-        	},
-        	{
-	                "rss":"http://feeds.feedburner.com/coderradiovideo",
-        	        "url": "crb",
-                	"title": "Coder Radio Bonus!"
-        	},
-        	{
-	                "rss":"http://feeds.feedburner.com/computeractionshowvideo",
-        	        "url": "las",
-	                "title": "Linux Action Show"
-        	},
-	        {
-        	        "rss":"http://feeds.feedburner.com/computeractionshowvideo",
-	                "url": "lab",
-        	        "title": "Linux Action Show Bonus!"
-	        },
-        	{
-	                "rss":"http://feeds.feedburner.com/linuxunvid",
-        	        "url": "lu",
-                	"title": "Linux Unplugged",
-                	"aliases": [
-                        	"lup"
-                	]
-	        },
-	        {
-        	        "rss":"http://feeds.feedburner.com/linuxunvid",
-                	"url": "lub",
-	                "title": "Linux Unplugged Bonus!"
-        	},
-        	{
-                	"rss":"http://feeds.feedburner.com/techsnaphd",
-	                "url": "ts",
-        	        "title": "TechSNAP"
-        	},
-	        {
-        	        "rss":"http://feeds.feedburner.com/techsnaphd",
-                	"url": "tsb",
-                	"title": "TechSNAP Bonus!"
-	        },
-        	{
-	                "rss":"http://www.jupiterbroadcasting.com/feeds/unfilterHD.xml",
-        	        "url": "uf",
-                	"title": "Unfilter"
-	        },
-        	{
-	                "rss":"http://feeds.feedburner.com/scibytehd",
-        	        "url": "sb",
-                	"title": "SciByte"
-	        },
-        	{
-	                "rss":"http://www.jupiterbroadcasting.com/feeds/FauxShowHD.xml",
-        	        "url": "fs",
-                	"title": "FauxShow"
-	        },
-        	{
-	                "rss":"http://www.jupiterbroadcasting.com/feeds/TechTalkToday.xml",
-        	        "url": "ttt",
-                	"title": "Tech Talk",
-	                "aliases": [
-        	                "ttt", "t3", "Tech Talk Today"
-                	]
-	        },
-        	{
-                	"rss":"http://www.jupiterbroadcasting.com/feeds/TechTalkToday.xml",
-	                "url": "t3b",
-        	        "title": "Tech Talk Today Bonus!"
-        	},
-        	{
-                	"rss":"https://feedpress.me/usererror",
-	                "url": "ue",
-        	        "title": "User Error"
-        	}
+            {
+                "rss": "http://furcast.fm/episodes/feed/",
+                "url": "fc",
+                "title": "FurCast",
+                "channel": "#furcast"
+            },
+            {
+                "rss": "https://fridaynighttech.com/episodes/feed/",
+                "url": "fnt",
+                "title": "Friday Night Tech",
+                "channel": "#fnt"
+            },
+            {
+                "rss": "https://maestropaws.com/episodes/feed/",
+                "url": "mp",
+                "title": "MaestroPaws",
+                "channel": "#maestropaws"
+            }
 	]
 }

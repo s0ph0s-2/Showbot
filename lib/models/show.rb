@@ -8,13 +8,14 @@
 #   aliases: (array[string]) An array of aliases that can additionally match
 #     the show
 class Show
-  attr_reader :title, :url, :rss, :aliases
+  attr_reader :title, :url, :rss, :aliases, :channel
 
   # param json_hash: (hash) A hash of show data with the following keys:
   #   title: (string) The show's title
   #   url: (string) The URL slug of the show
   #   rss: (string) The RSS feed URL of the show
   #   aliases: (array[string]) [Optional] An array of aliases
+  #   channel: (string) The IRC channel the show uses
   # NOTE: json_hash is just a hash, and doesn't need anything to do with JSON
   #
   # The aliases will all be downcased before being stored internally
@@ -22,6 +23,7 @@ class Show
     @title = json_hash["title"]
     @url = json_hash["url"]
     @rss = json_hash["rss"]
+    @channel = json_hash["channel"]
     @aliases = (json_hash["aliases"] || []).map do |show_alias|
       show_alias.downcase
     end
@@ -35,7 +37,7 @@ class Show
   def matches?(search_term)
     search_term = search_term.downcase
 
-    matches_alias?(search_term) || matches_url?(search_term) || matches_title?(search_term)
+    matches_alias?(search_term) || matches_url?(search_term) || matches_title?(search_term) || matches_channel?(search_term)
   end
 
   private
@@ -53,5 +55,10 @@ class Show
   # Tests if the search term exactly matches one of the aliases
   def matches_alias?(search_term)
     aliases.include? search_term
+  end
+
+  # Tests if the search term matches the channel
+  def matches_channel?(search_term)
+      channel.downcase == search_term
   end
 end

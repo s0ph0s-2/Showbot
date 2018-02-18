@@ -54,16 +54,18 @@
             %h2=t('views.layout.who.message')
             %p=t('views.layout.who.para_1')
             %p=t('views.layout.who.para_2')
+            %p=t('views.layout.who.para_3')
           %li.grid_3.push_2
             %h2=t('views.layout.where.message')
             %p=t('views.layout.where.para_1')
             %p=t('views.layout.where.para_2')
             %p=t('views.layout.where.para_3')
+            %p=t('views.layout.where.para_4')
 
     / Javascript at the bottom for fast page loading
     / Grab Google CDN's jQuery. fall back to local if necessary
-    %script{:type => "text/javascript", :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
-    %script{:type => "text/javascript", :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
+    %script{:type => "text/javascript", :src => "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
+    %script{:type => "text/javascript", :src => "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
     :javascript
       !window.jQuery && document.write('<script src="/js/jquery.min.js"><\/script>')
     / JQuery Plugins

@@ -12,18 +12,22 @@ module Cinch
 
       enforce_cooldown
 
-      timer 600, :method => :refresh_calendar
+      timer 600, :method => :refresh_calendar_news
 
       listen_to :connect, :method => :on_connect
 
       match /next\s*$/i,    :method => :command_next      # !next
       match /next\s+(.+)/i, :method => :command_next      # !next <show>
       match /schedule/i,    :method => :command_schedule  # !schedule
+      # This matches permissively because it lets the bot prompt the user
+      # if the don't include a show slug
+      match /news(.*)/i, :method => :command_news   # !news show
 
       def help
         [
           '!next - When\'s the next live show?',
-          '!schedule - What shows are being recorded live in the next seven days?'
+          '!schedule - What shows are being recorded live in the next seven days?',
+          '!news - What\'s the latest news for a show?'
         ].join "\n"
       end
 
@@ -41,22 +45,31 @@ module Cinch
         ].join "\n"
       end
 
+      def help_news
+        [
+          '!news - What\'s the latest news for a show?',
+          'Usage: !news show'
+        ].join "\n"
+      end
+
       def initialize(*args)
         super
         @calendar = Calendar.new(config)
         @events = []
+        @reader = RSS::RSSReader.new config
       end
 
       # A method called on connection to an IRC server
       # Use to call any additional initialization
       def on_connect(m)
-        refresh_calendar
+        refresh_calendar_news
       end
 
       # Pulls in the latest calendar events and stores them in @events
       # Called by a timer to keep up to date with the calendar
-      def refresh_calendar
+      def refresh_calendar_news
         @events = @calendar.events
+        @reader.refresh
       end
 
       def command_next(m, opts = '')
@@ -86,6 +99,14 @@ module Cinch
         rescue TZInfo::InvalidTimezoneIdentifier
           m.user.send 'That is not a valid timezone. For a list of valid time zones, please see http://en.wikipedia.org/wiki/List_of_tz_database_time_zones'
         end
+      end
+
+      def command_news(m, show)
+        m.user.send("Sorry, but you have to tell me what show you want!") if show == ""
+
+        show_symbol = Shows.find_show(show.strip).url.to_sym
+        m.reply(print_show @reader.feeds[show_symbol].latest, show_symbol) and return unless show_symbol.nil?
+        m.reply("I can't find that show!")
       end
 
       # Replies to the user with information about the next show
@@ -197,6 +218,11 @@ module Cinch
         end.select do |event|
           event.after? Time.now
         end.first
+      end
+
+      def print_show(rssitem, id)
+        show_name = Shows.find_show_title(id.to_s)
+        "The most recent news from #{show_name} was posted on #{rssitem.date.strftime("%0F")}. #{rssitem.title}: #{rssitem.body}".gsub(/\n/, " ")
       end
     end
   end

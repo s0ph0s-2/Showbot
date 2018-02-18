@@ -85,7 +85,7 @@ class ShowbotWeb < Sinatra::Base
     if request.xhr?
       suggestion = Suggestion.get(params[:id])
       cluster_top = suggestion.top_of_cluster? # figure out if top before adding new vote
-      suggestion.vote_up(request.ip)
+      suggestion.vote_up(env["HTTP_X_REAL_IP"])
       response = {
         suggestion_id: suggestion.id,
         votes: suggestion.votes.count.to_s,
@@ -98,6 +98,10 @@ class ShowbotWeb < Sinatra::Base
     else
       redirect '/'
     end
+  end
+
+  get '/ip' do
+    env["HTTP_X_REAL_IP"].to_s
   end
 
   # Word cloud generation
@@ -235,12 +239,12 @@ class ShowbotWeb < Sinatra::Base
   # ------------------
   #
   def broadcast_upvote(request, response)
-    logger.info "Broadcasting to all connected sockets aside from #{request.ip}"
+    logger.info "Broadcasting to all connected sockets aside from #{env["HTTP_X_REAL_IP"]}"
 
     response['action'] = 'upvote'
     EM.next_tick do
       settings.open_sockets.each do |k,v|
-        if k == request.ip then next else v.send(response.to_json) end
+        if k == env["HTTP_X_REAL_IP"] then next else v.send(response.to_json) end
       end
     end
   end
@@ -355,7 +359,7 @@ class ShowbotWeb < Sinatra::Base
     else
       request.websocket do |ws|
         socket_key = settings.socket_key_id_enabled ?
-          request.env["HTTP_SEC_WEBSOCKET_KEY"] : request.ip
+          request.env["HTTP_SEC_WEBSOCKET_KEY"] : env["HTTP_X_REAL_IP"]
 
         ws.onopen do
           # Add client to manifest

@@ -1,7 +1,7 @@
 en:
   messages:
     models:
-      suggestion: That suggestion was too long. JBot is sorry. Think title, not transcript.
+      suggestion: That suggestion was too long. Xana is sorry. Think title, not transcript.
   views:
     clouds:
       cloud_data_empty: "No episodes found in that time frame."
@@ -12,35 +12,37 @@ en:
         other: "are %cloud_data_count clouds"
       out_of_bounds_end: " on the specified date."
     layout:
-      title: "JBot"
-      meta_description: "JBot displays title suggestions from users listening to the live http://jupiterbroadcasting.com podcasts. It gathers these suggestions from the #jupiterbroadcasting IRC channel."
+      title: "Xana"
+      meta_description: "Xana displays title suggestions from users listening to the live https://xbn.fm podcasts. It gathers these suggestions from the #furcast, #fnt, and #maestropaws IRC channels."
       meta_author: "Jeremy Mack"
-      header: "JBot"
+      header: "Xana"
       heart: "<<span>3</span>"
       link_titles: "Titles"
       link_links: "Links"
       friendly:
-        message: "JBot loves you."
-        alt: "Not like that."
+        message: "Xana loves you."
+        alt: "In a psychotic AI kind of way."
       exist:
         message: "Why"
-        para_1: "People in the JB chat love to suggest titles for our shows, "
-        para_2: "so showbot collects and organizes these in an organized fashion to help "
+        para_1: "People in the XBN chat love to suggest titles for our shows, "
+        para_2: "so Showbot collects and organizes these in an organized fashion to help "
         para_3: "the staff make a decision. It also lets the community vote on the titles."
       who:
         message: "Who"
         para_1: "Showbot was created by Jeremy Mack, <a href='http://twitter.com/mutewinter'>@mutewinter</a> and the coders on <a href='https://github.com/mutewinter/Showbot'>GitHub</a>."
         para_2: "Showbot was adapted into JBot by <a href='http://twitter.com/rikailp'>@rikai</a>(<a href=''http://github.com/rikai''>GH</a>) in order to integrate it into the JB ecosystem."
+        para_3: "Showbot was poked around a bit by s0ph0s to turn it into the bot you see today."
       where:
         message: "Where"
         para_1: "<a href='http://jupiterbroadcasting.com/'>Jupiter Broadcasting</a>"
         para_2: "<a href='http://github.com/mutewinter/Showbot'>Showbot @ GitHub</a>"
         para_3: "<a href='http://github.com/rikai/Showbot'>JBot @ GitHub</a>"
+        para_4: "<a href='https://github.com/s0ph0s-2/Showbot'>Xana @ Github</a>"
     links:
       links_count:
         one: "1 Link Suggestion in the last 24 hours"
         other: "%links.count Link Suggestions in the last 24 hours"
-      irc_help: In the <a href='http://jupiterbroadcasting.com/'>Jupiter Broadcasting chat room</a>? Type <span class='code'>!link http://example.com</span> to suggest a link.
+      irc_help: In one of the <a href='https://xbn.fm/'>XBN chat channels</a>? Type <span class='code'>!link http://example.com</span> to suggest a link.
       unknown_show: "Show Not Listed"
       zero: "No link suggestions yet"
     suggestion:
@@ -49,7 +51,7 @@ en:
           zero: "No title suggestions yet"
           one: "%{count} Title suggestion in the last 24 hours"
           other: "%{count} Title suggestions in the last 24 hours"
-        irc_help: In the <a href='http://jupiterbroadcasting.com/'>jupiterbroadcasting chat room</a>? Type <span class='code'>!suggest Wacky Title</span> to suggest a title.
+        irc_help: In one of the <a href='https://xbn.fm/'>XBN chat channels</a>? Type <span class='code'>!suggest Rainbow-Colored Dick Dragon</span> to suggest a title.
         view_mode:
           Bubbles: "Bubbles"
           Tables: "Tables"
