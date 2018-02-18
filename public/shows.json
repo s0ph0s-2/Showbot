@@ -75,6 +75,11 @@
                 	"rss":"http://www.jupiterbroadcasting.com/feeds/TechTalkToday.xml",
 	                "url": "t3b",
         	        "title": "Tech Talk Today Bonus!"
+        	},
+        	{
+                	"rss":"https://feedpress.me/usererror",
+	                "url": "ue",
+        	        "title": "User Error"
         	}
 	]
 }

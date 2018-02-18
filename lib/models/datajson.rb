@@ -99,7 +99,9 @@ module DataJSON
         }
       end
 
-      data.to_json(args)
+      args.length == 0 ?
+        data.to_json :
+        data.to_json(args)
     end
 
     def start_show(show)

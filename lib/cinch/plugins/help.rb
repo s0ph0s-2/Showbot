@@ -1,7 +1,11 @@
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class Help
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /help$/i,       :method => :command_help          # !help
       match /help\s+(.+)/i, :method => :command_help_command  # !help <command>

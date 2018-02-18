@@ -3,58 +3,62 @@
 module Cinch
   module Plugins
     class Admin
-      include Cinch::Plugin
+      include Auth::AdminPlugin
 
-      match /(?:exit|quit)/i,     :method => :command_exit
-      match /start_show$/i,       :method => :command_show_list
-      match /start_show\s+(.+)/i, :method => :command_start_show
-      match /end_show/i,          :method => :command_end_show
-      match /join\s(.+)/i,        :method => :command_join
-      match /leave\s(.+)/i,       :method => :command_leave
+      [{
+        :pattern => /(?:exit|quit)/i,
+        :method => :command_exit,
+        :unauthorized_msg => 'You are not authorized to command the bot to exit.'
+      }, {
+        :pattern => /start_show$/i,
+        :method => :command_show_list,
+        :unauthorized_msg => 'You are not authorized to start a show.'
+      }, {
+        :pattern => /start_show\s+(.+)/i,
+        :method => :command_start_show,
+        :unauthorized_msg => 'You are not authorized to start a show.'
+      }, {
+        :pattern => /end_show/i,
+        :method => :command_end_show,
+        :unauthorized_msg => 'You are not authorized to end a show.'
+      }, {
+        :pattern => /join\s(.+)/i,
+        :method => :command_join,
+        :unauthorized_msg => 'You are not authorized to invite the bot.'
+      }, {
+        :pattern => /leave\s(.+)/i,
+        :method => :command_leave,
+        :unauthorized_msg => 'You are not authorized to make the bot leave.'
+      }].each do |m|
+        admin_match m[:pattern], {
+          :method => m[:method],
+          :unauthorized_msg => m[:unauthorized_msg]
+        }
+      end
 
       def initialize(*args)
-        super
-        @admins = Array(config[:admins])
+        super *args
         @data_json = DataJSON.new config[:data_json]
+        @shows = Shows.new(JSON.parse(File.open(SHOWS_JSON).read)["shows"])
       end
 
       def command_join(m, channel)
-        if !authed? m.user
-          m.user.send 'You are not authorized to invite the bot.'
-          return
-        end
-
         Channel(channel).join
       end
 
       def command_leave(m, channel)
-        if !authed? m.user
-          m.user.send 'You are not authorized to make the bot leave.'
-          return
-        end
-
         Channel(channel).part
       end
 
       def command_show_list(m)
-        if !authed? m.user
-          m.user.send 'You are not authorized to start a show.'
-          return
-        end
-
-        shows = Shows.shows
+        shows = @shows.shows
         shows.each do |show|
           m.user.send "#{show.title}: !start_show #{show.url}"
         end
       end
 
       def command_start_show(m, show_slug)
-        if !authed? m.user
-          m.user.send 'You are not authorized to start a show.'
-          return
-        end
-
-        show = Shows.find_show show_slug
+        show = @shows.find_show show_slug
         if show.nil?
           m.user.send 'Sorry, but I couldn\'t find that particular show.'
           return
@@ -73,11 +77,6 @@ module Cinch
       end
 
       def command_end_show(m)
-        if !authed? m.user
-          m.user.send 'You are not authorized to end a show.'
-          return
-        end
-
         if !@data_json.live?
           m.user.send 'No live show, but thanks for playing!'
           return
@@ -97,28 +96,11 @@ module Cinch
         end
       end
 
-      # Admin command that tells the bot to exit
-      # !exit
       def command_exit(m)
-        if !authed? m.user
-          m.user.send "You are not authorized to exit #{shared[:Bot_Nick]}."
-          return
-        end
-
         bot.channels.each do |channel|
           channel.send "#{shared[:Bot_Nick]} is shutting down. Good bye :("
         end
         Process.exit
-      end
-
-      private
-
-      # Is a user an authorized user?
-      # The user must be in the list of admins from the config file, and must
-      # also be authenticated to NickServ.
-      # param user: (Cinch::User) The user
-      def authed?(user)
-        @admins.include?(user.nick) && user.authed?
       end
     end
   end

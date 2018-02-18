@@ -1,0 +1,12 @@
+- cluster.each do |cstruct|
+  - if cstruct[:belongs_to_cluster]
+    - if cstruct[:is_top]
+      %tr{:class => "cluster-top", :id => "cluster-#{cstruct[:suggestion].cluster_id}", "data-expansion-state" => "closed", "data-sg-id" => cstruct[:suggestion].id}
+        = cstruct[:render]
+    - else
+      %tr{:class => "expand-child child-cluster-#{cstruct[:suggestion].cluster_id}", :style => "display: none", "data-sg-id" => cstruct[:suggestion].id}
+        = cstruct[:render]
+  - else
+    %tr{"data-sg-id" => suggestion.id}
+      = cstruct[:render]
+

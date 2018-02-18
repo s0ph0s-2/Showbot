@@ -1,0 +1,13 @@
+%li.bubble.grid_4
+  .hover.show=h Shows.find_show_title(suggestion.show) if suggestion.show
+  .qstart “
+  .title_container{"data-sg-id" => suggestion.id}
+    .votes_container
+      .votes=link_and_vote_count(suggestion, request.ip)
+      .subtitle=t(:subtitle, :scope => [:views, :suggestion, :_bubble], :count => suggestion.votes_counter)
+    .title=h suggestion.title
+  .qend ”
+  = timeago
+  .arrow_user
+    .user=h suggestion.user
+    %span.arrow

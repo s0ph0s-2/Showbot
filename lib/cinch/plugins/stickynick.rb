@@ -1,7 +1,11 @@
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class StickyNick
       include Cinch::Plugin
+
+      enforce_cooldown
 
       timer 300, :method => :fix_nick
 

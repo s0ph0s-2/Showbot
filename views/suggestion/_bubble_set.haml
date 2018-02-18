@@ -2,7 +2,7 @@
   .clear
   = suggestion_set_hr(suggestion_set)
   - suggestions = suggestion_set.suggestions
-  %ol
+  %ol{"data-show-slug" => suggestion_set.slug}
     - col = 0
     - suggestions.each do |suggestion|
       %li.bubble.grid_4

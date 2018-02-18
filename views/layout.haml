@@ -21,10 +21,12 @@
           .banner DEVELOPMENT MODE
           .banner_push
       #header
-        %h1.logo
+        %h1.logo{:style => 'float: left'}
           %a{:href => '/'}=t('views.layout.header')
           -# display:none so the heart doesn't briefly show
           .heart{:style => 'display:none;'}=t('views.layout.heart')
+        -if settings.live_mode_enabled
+          %button.live-mode-toggle.live-is-on Disable Live Mode
         %nav
           %ul
             %li
@@ -68,9 +70,17 @@
     %script{:type => "text/javascript", :src  => "/js/jquery.timeago.js"}
     %script{:type => "text/javascript", :src  => "/js/jquery.tablesorter.min.js"}
     %script{:type => "text/javascript", :src => "/js/jquery.tipsy.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery.parsehtml.js"}
     %script{:type => "text/javascript", :src => "/js/d3.v3.min.js"}
     %script{:type => "text/javascript", :src => "/js/d3.layout.cloud.js"}
     %script{:type => "text/javascript", :src => "/js/word_cloud.js"}
+
+    :javascript
+      document.__jb = {};
+    -if settings.live_mode_enabled
+      :javascript
+        document.__jb['live_mode_enabled'] = true;
+
     / Main JS
     %script{:type => "text/javascript", :src  => "/js/showbot.js"}
     :javascript
@@ -85,12 +95,5 @@
       })();
     :javascript
       $(function() {
-        $('tr.cluster-top').children('td.title')
-          .css("cursor","pointer")
-          .attr("title","Click to expand/collapse")
-          .click(function(){
-            $(this).parent().siblings('.child-'+this.parentElement.id).toggle();
-            $(this).find('.cluster-arrow').toggleClass('expanded-arrow')
-          });
         $('tr[class^="expand-child"]').hide().children('td');
       });

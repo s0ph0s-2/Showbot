@@ -2,7 +2,7 @@
   - suggestions = suggestion_set.suggestions
   .clear
   = suggestion_set_hr(suggestion_set)
-  .suggestions_table
+  .suggestions_table{"data-show-slug" => suggestion_set.slug}
     - group_count = suggestions.map { |s| s.cluster_id }.uniq.reject { |s| s == nil }.count + suggestions.count { |s| s.cluster_id == nil }
     .total=t(:titles, :scope => [:views, :suggestion, :_cluster_set], :count => suggestions.count) + t(:groups, :scope => [:views, :suggestion, :_cluster_set], :count => group_count)
     %table.sortable
@@ -16,12 +16,12 @@
         - suggestions.each do |suggestion|
           - if suggestion.in_cluster?
             - if suggestion.top_of_cluster?
-              %tr{:class => "cluster-top", :id => "cluster-#{suggestion.cluster_id}"}
+              %tr{:class => "cluster-top", :id => "cluster-#{suggestion.cluster_id}", "data-expansion-state" => "closed", "data-sg-id" => suggestion.id}
                 = haml :'suggestion/_cluster_table_row', :locals => {suggestion: suggestion, cluster_top: true}
               - suggestion.cluster.suggestions.each do |child_suggestion|
                 - if child_suggestion.id != suggestion.id
-                  %tr{:class => "expand-child child-cluster-#{child_suggestion.cluster_id}"}
+                  %tr{:class => "expand-child child-cluster-#{child_suggestion.cluster_id}", "data-sg-id" => child_suggestion.id}
                     = haml :'suggestion/_cluster_table_row', :locals => {suggestion: child_suggestion, cluster_top: false}
           - else
-            %tr
+            %tr{"data-sg-id" => suggestion.id}
               = haml :'suggestion/_cluster_table_row', :locals => {suggestion: suggestion, cluster_top: true}

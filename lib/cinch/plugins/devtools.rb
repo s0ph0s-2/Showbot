@@ -1,9 +1,12 @@
+require 'cinch/cooldown'
 require 'objspace'
 
 module Cinch
   module Plugins
     class DevTools
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /plugins\s*$/i,           :method => :command_list_plugins
       match /resources\s*$/i,         :method => :command_all_resources

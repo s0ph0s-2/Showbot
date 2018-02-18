@@ -1,2 +1,3 @@
 web: bundle exec thin start -p $DEVELOPMENT_PORT -e development
 irc: ruby showbot_irc.rb network_test
+discord: ruby showbot_discord.rb

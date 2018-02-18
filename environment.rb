@@ -20,7 +20,7 @@ configure do
   I18n.config.enforce_available_locales = true
   I18n.config.default_locale = ENV['SHOWBOT_LOCALE']
   I18n.config.locale = I18n.config.default_locale
-  
+
   # load models
   Dir.glob("#{File.dirname(__FILE__)}/lib/models/*.rb").sort.each { |lib| require lib }
 

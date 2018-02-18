@@ -1,3 +1,4 @@
+require 'cinch/cooldown'
 require 'optparse'
 require 'tzinfo'
 
@@ -8,6 +9,8 @@ module Cinch
   module Plugins
     class Schedule
       include Cinch::Plugin
+
+      enforce_cooldown
 
       timer 600, :method => :refresh_calendar
 

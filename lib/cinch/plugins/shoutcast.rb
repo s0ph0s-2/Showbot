@@ -1,6 +1,7 @@
 
 # Get the title of a Shoutcast stream
 
+require 'cinch/cooldown'
 require 'uri'
 require 'net/http'
 
@@ -8,6 +9,8 @@ module Cinch
   module Plugins
     class Shoutcast
       include Cinch::Plugin
+
+      enforce_cooldown
 
       HEADERS = {
           "Icy-MetaData" => '1'

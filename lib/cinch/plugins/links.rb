@@ -4,12 +4,15 @@
 #
 # Gotta link 'em all
 
+require 'cinch/cooldown'
 require 'addressable/uri'
 
 module Cinch
   module Plugins
     class Links
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /link\s+(.*)/i,     :method => :command_link      # !link http://example.com/greatest-link-ever
 

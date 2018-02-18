@@ -10,14 +10,19 @@ gem 'dotenv'
 
 # Backups
 gem 'backup'
-gem 'fog', '~> 1.9.0'
+gem 'fog'
 gem 'whenever', require: false
 gem 'net-ssh', ['>= 2.3.0', '<= 2.5.2']
 gem 'excon', '~> 0.17.0'
-gem 'mail', '~> 2.5.0'
+gem 'mail'
+
+# Discord
+gem 'discordrb'
+gem 'rest-client', '~> 2.0.2'
 
 # Web
-gem 'sinatra'
+gem 'sinatra', '< 2.0.0'
+gem 'sinatra-websocket'
 gem 'sinatra-reloader'
 gem 'thin'
 gem 'haml'
@@ -32,11 +37,14 @@ gem 'cinch'
 gem 'cinchize'
 gem 'chronic'
 gem 'chronic_duration'
-gem 'twitter'
+gem 'tweetstream'
 gem 'google-api-client'
 gem 'htmlentities'
 gem 'cinch-identify'
+gem 'cinch-cooldown', '>= 1.2.0'
 gem 'stopwords', '0.2'
+gem 'droplet_kit'
+gem 'nokogiri', '>= 1.6.8'
 
 # Data Mapper
 gem 'data_mapper'
@@ -58,10 +66,11 @@ group :development do
   gem 'dm-sqlite-adapter'
   gem 'foreman'
   gem 'rb-fsevent'
+#  gem 'irbtools-more', '~> 2.0'
+  gem 'did_you_mean', '~> 0.9'
+  gem 'faraday', '0.9.2'
 end
 
 group :test do
   gem 'rack-test', require: false
 end
-
-

@@ -113,6 +113,32 @@ body {
       }
     }
 
+    button.live-mode-toggle {
+      display: inline-block;
+      border-radius: 4px;
+      margin: 30px 0 0 5px;
+      /* Gotta make room for the lhs heart */
+      color: #FFF;
+      border: none;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.live-mode-toggle.live-is-on {
+      background-color: #990808;
+    }
+
+    button.live-mode-toggle.live-is-on:hover {
+      background-color: #8C0707;
+    }
+
+    button.live-mode-toggle.live-is-off {
+      background-color: #41BA53;
+    }
+
+    button.live-mode-toggle.live-is-off:hover {
+      background-color: #1CBA33;
+    }
   }
 } // #header
 
@@ -306,7 +332,7 @@ ul.segmented_controls {
 
     td {
       vertical-align: top;
-      overflow-y:hidden;
+      overflow: hidden;
       &.votes {
         text-align: right;
       }
@@ -363,6 +389,10 @@ ul.segmented_controls {
   position: relative;
   background: url(/images/expand_arrow_sprite.png) no-repeat 0 0;
   text-align: right;
+}
+
+tr.cluster-top td.title {
+  cursor: pointer;
 }
 
 .expanded-arrow {

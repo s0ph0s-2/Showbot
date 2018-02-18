@@ -2,6 +2,9 @@
 ################
 password.yml
 cinchize.yml
+quotes.yml
+public/data.json
+public/shows.json.xbn
 
 # Logs, Databases & Cache #
 ###########################
@@ -66,6 +69,3 @@ Thumbs.db
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
-/public/data.json
-/public/shows.json.xbn
-/quotes.yml

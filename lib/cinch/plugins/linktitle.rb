@@ -1,11 +1,14 @@
 require 'nokogiri'
 require 'eat'
 require 'openssl'
+require 'cinch/cooldown'
 
 module Cinch
   module Plugins
     class LinkTitle
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /(https?\:\/\/.*?)(\s|$)/, use_prefix: false
 

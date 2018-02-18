@@ -1,11 +1,14 @@
 require 'open-uri'
 require 'json'
 require 'openssl'
+require 'cinch/cooldown'
 
 module Cinch
   module Plugins
     class Bittick
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /bittick/i,   :method => :command_btcetick
       match /btcetick/i,  :method => :command_btcetick

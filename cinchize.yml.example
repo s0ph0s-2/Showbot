@@ -1,4 +1,18 @@
 ---
+test_hosts: &test_hosts
+  Live_Url: "localhost:5000/live"
+  Sinatra_Url: "http://localhost:5000"
+
+live_hosts: &live_hosts
+  Live_Url: "example.com/live"
+  Sinatra_Url: "http://www.example.com"
+
+auth_admin:
+  admins:
+    - "ChrisLAS"
+    - "KernelLinux"
+    - "rikai"
+
 # Plugins used for all configs
 plugins: &plugins
   plugins:
@@ -10,6 +24,7 @@ plugins: &plugins
       :data_json: "local/path/to/data.json" # Local path, relative to the base bot folder
       :admins:
         - "YourNickHere"
+    class: "Cinch::Plugins::DigitalOcean"
   -
     class: "Cinch::Plugins::Bacon"
   -
@@ -44,6 +59,13 @@ plugins: &plugins
     class: "Cinch::Plugins::StickyNick"
   -
     class: "Cinch::Plugins::Suggestions"
+    options:
+      live_titles:
+        enabled: true
+        test_hosts:
+          <<: *test_hosts
+        live_hosts:
+          <<: *live_hosts
   -
     class: "Cinch::Plugins::Twitter"
     options:
@@ -73,6 +95,8 @@ servers:
   network_test:
     <<: *network_base
     nick: botname_test
+    messages_per_second: 1
+    server_queue_size: 5
     channels:
       - "#cinch-bots"
     shared:
@@ -80,13 +104,21 @@ servers:
       Backup_Bot_Nick: "botname-backup"
       Live_Url: "localhost:5000/live"
       Sinatra_Url: "http://localhost:5000"
+      # This controls Cinch::Cooldown.
+      :cooldown:
+        :config:
+          :linux:
+            :global: 2
+            :user: 4
+      <<: *test_hosts
   network_live:
     <<: *network_base
     nick: botname
+    messages_per_second: 1
+    server_queue_size: 5
     channels:
       - "#cinch-bots"
     shared:
       Bot_Nick: "botname"
       Backup_Bot_Nick: "botname-backup"
-      Live_Url: "example.com/live"
-      Sinatra_Url: "http://www.example.com"
+      <<: *live_hosts

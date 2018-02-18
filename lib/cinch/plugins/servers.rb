@@ -1,7 +1,11 @@
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class Servers
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /server$/i,       :method => :command_server          # !server
       match /server\s+(.+)/i, :method => :command_server_service  # !server <service>
@@ -51,7 +55,7 @@ module Cinch
       end
 
       def command_mumble(m)
-        m.user.send 'Mumble info - Server: mumble.jupitercolony.com, Port: 64734'
+        m.user.send 'Mumble info - Server: mumble.jupiterbroadcasting.org, Port: 64734'
       end
     end
   end

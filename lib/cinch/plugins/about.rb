@@ -1,7 +1,11 @@
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class About
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /about/i, :method => :command_about # !about
 

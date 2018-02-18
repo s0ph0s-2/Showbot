@@ -1,6 +1,8 @@
 [![Stories in Ready](https://badge.waffle.io/rikai/Showbot.png?label=ready&title=Ready)](https://waffle.io/rikai/Showbot)
 [![Code Climate](https://codeclimate.com/github/rikai/Showbot/badges/gpa.svg)](https://codeclimate.com/github/rikai/Showbot)
 [![Issue Count](https://codeclimate.com/github/rikai/Showbot/badges/issue_count.svg)](https://codeclimate.com/github/rikai/Showbot)
+[![Build Status](https://travis-ci.org/rikai/Showbot.svg?branch=master)](https://travis-ci.org/rikai/Showbot)
+
 # JBot
 
 A sweet IRC bot with a **web interface** for [Jupiter Broadcasting](http://www.jupiterbroadcasting.com/).
@@ -22,7 +24,7 @@ follwing message once it is connected to an IRC network:
 
 ### Prerequisites
 
- * [RVM with Ruby 1.9.2 or Greater](https://rvm.io/)
+ * [RVM with Ruby 2.1.2 or greater](https://rvm.io/)
  * [Bundler](http://gembundler.com/)
  * Git (for pulling down source from Github, alternately download a tarball)
  * SQLite3 (for development)

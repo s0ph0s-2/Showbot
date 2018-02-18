@@ -5,7 +5,8 @@
 require 'bundler/setup'
 require 'coffee_script'
 require 'sinatra' unless defined?(Sinatra)
-require "sinatra/reloader" if development?
+require 'sinatra/reloader' if development?
+require 'sinatra-websocket'
 
 require 'json'
 
@@ -13,13 +14,16 @@ require File.join(File.dirname(__FILE__), 'environment')
 
 
 SHOWS_JSON = File.expand_path(File.join(File.dirname(__FILE__), "public", "shows.json")) unless defined? SHOWS_JSON
-SAMPLE_TITLES_JSON = File.expand_path("hypercritical.json")
 
 class ShowbotWeb < Sinatra::Base
+  set :open_sockets, {}
+
   configure do
     set :public_folder, "#{File.dirname(__FILE__)}/public"
     set :views, "#{File.dirname(__FILE__)}/views"
-    set :shows, Shows.new { SHOWS_JSON }
+    set :shows, Shows.new(JSON.parse(File.open(SHOWS_JSON).read)["shows"])
+    set :live_mode_enabled, ENV['LIVE_MODE'] == "true"
+    set :socket_key_id_enabled, ENV['SOCKET_KEY_ID'] == "true"
   end
 
   configure(:production, :development) do
@@ -58,6 +62,11 @@ class ShowbotWeb < Sinatra::Base
     end
   end
 
+  get '/new_title_trigger' do
+    title_id = params[:id]
+    self.broadcast_new_title(title_id)
+  end
+
   get '/links' do
     @title = "Suggested Links in the last 24 hours"
     @links = Link.recent.all(:order => [:created_at.desc])
@@ -77,17 +86,21 @@ class ShowbotWeb < Sinatra::Base
       suggestion = Suggestion.get(params[:id])
       cluster_top = suggestion.top_of_cluster? # figure out if top before adding new vote
       suggestion.vote_up(request.ip)
-      {votes: suggestion.votes.count.to_s,
+      response = {
+        suggestion_id: suggestion.id,
+        votes: suggestion.votes.count.to_s,
         cluster_top: cluster_top,
         cluster_id: suggestion.cluster_id,
-        cluster_votes: suggestion.total_for_cluster}.to_json
+        cluster_votes: suggestion.total_for_cluster
+      }
+      self.broadcast_upvote(request, response)
+      response.to_json
     else
       redirect '/'
     end
   end
 
   # Word cloud generation
-
   get '/clouds_between/:days_a/:days_b' do
     days_ago = [params[:days_a].to_i, params[:days_b].to_i].sort
     suggestion_sets = Suggestion.all(:created_at => ( (DateTime.now - days_ago[1])..(DateTime.now - days_ago[0]) ), :order => [:created_at.desc]).group_by_show
@@ -218,6 +231,160 @@ class ShowbotWeb < Sinatra::Base
   end
 
   # ------------------
+  # Sockets
+  # ------------------
+  #
+  def broadcast_upvote(request, response)
+    logger.info "Broadcasting to all connected sockets aside from #{request.ip}"
+
+    response['action'] = 'upvote'
+    EM.next_tick do
+      settings.open_sockets.each do |k,v|
+        if k == request.ip then next else v.send(response.to_json) end
+      end
+    end
+  end
+
+  def broadcast_new_title(title_id)
+    suggestion = Suggestion.get(title_id)
+
+    cluster = {
+      id: nil,
+      render: self.cluster_live_render(suggestion, request),
+      new_cluster: nil
+    }
+
+    if suggestion.in_cluster?
+      sgs = suggestion.cluster.suggestions
+      cluster[:id] = suggestion.cluster.id
+      if(sgs.length == 2)
+        cluster[:new_cluster] = {
+          orig_sg_id: sgs.select{|sg| sg.id != suggestion.id}.first.id
+        }
+      end
+    end
+
+    response = {
+      action: 'new_title',
+      show_slug: suggestion.show,
+      trl: self.trl_render(suggestion),
+      bubble_live: self.bubble_live_render(suggestion, request),
+      cluster: cluster
+    }
+
+    EM.next_tick do
+      settings.open_sockets.each do |k,v|
+        v.send(response.to_json)
+      end
+    end
+  end
+
+
+  def timeago_render(created_at)
+    timeago_engine = Haml::Engine.new(File.read(
+      "#{File.dirname(__FILE__)}/views/suggestion/_timeago.haml"))
+    timeago_engine.render(self, {
+      datetime: created_at
+    })
+  end
+
+  def trl_render(suggestion)
+    trl_engine = Haml::Engine.new(File.read(
+      "#{File.dirname(__FILE__)}/views/suggestion/_table_row_live.haml"))
+    trl_engine.render(self, {
+      suggestion: suggestion,
+      timeago: timeago_render(suggestion.created_at)
+    })
+  end
+
+  def bubble_live_render(suggestion, request)
+    bubble_engine = Haml::Engine.new(File.read(
+      "#{File.dirname(__FILE__)}/views/suggestion/_bubble_live.haml"))
+    bubble_engine.render(self, {
+      suggestion: suggestion,
+      timeago: timeago_render(suggestion.created_at),
+      request: request
+    })
+  end
+
+  def cluster_live_render(suggestion, request)
+    cluster_engine = Haml::Engine.new(File.read(
+      "#{File.dirname(__FILE__)}/views/suggestion/live_cluster/_cluster.haml"))
+    cluster_engine.render(self, {
+      suggestion: suggestion,
+      cluster: self.cluster_struct_for_suggestion(suggestion, request)
+    })
+  end
+
+  def cluster_struct_for_suggestion(suggestion, request)
+    if suggestion.in_cluster?
+      suggestion.cluster.suggestions
+        .map do |sg|
+          {
+            suggestion: sg,
+            belongs_to_cluster: true,
+            is_top: sg.top_of_cluster?,
+            render: self.live_cluster_row_render(sg, request)
+          }
+        end
+        .sort{|lhs, rhs| lhs[:is_top] ? -1 : 1} # Ensure top item is first row
+    else
+      [{
+        suggestion: suggestion,
+        belongs_to_cluster: false,
+        is_top: true,
+        render: self.live_cluster_row_render(suggestion, request)
+      }]
+    end
+  end
+
+  def live_cluster_row_render(suggestion, request)
+    cluster_row_engine = Haml::Engine.new(File.read(
+      "#{File.dirname(__FILE__)}/views/suggestion/live_cluster/_cluster_table_row.haml"))
+    cluster_row_engine.render(self, {
+      timeago: timeago_render(suggestion.created_at),
+      suggestion: suggestion,
+      request: request
+    })
+  end
+
+  get '/socket' do
+    if !request.websocket?
+      # Bad request, should hit this endpoint unless it's a websocket request
+      status 400
+    else
+      request.websocket do |ws|
+        socket_key = settings.socket_key_id_enabled ?
+          request.env["HTTP_SEC_WEBSOCKET_KEY"] : request.ip
+
+        ws.onopen do
+          # Add client to manifest
+
+          if settings.open_sockets.key?(socket_key)
+            # NOTE: Need to protect against cases where we receive an onopen event
+            # and attempt to register a client with a key that already exists in
+            # our open socket manifest. If we just clober the entry without closing
+            # the socket, we leak the original handle. This allows the originally
+            # connected client to emit a close event and actuall disconnect the
+            # second client that connected. If we force close it, the original client
+            # cannot force all connections sharing it's key shut.
+            settings.open_sockets[socket_key].close_websocket
+          end
+
+          settings.open_sockets[socket_key] = ws
+        end
+
+        ws.onclose do
+          # Cleanup after client disconnects
+          settings.open_sockets.delete(socket_key)
+        end
+
+      end
+    end
+  end
+
+
+  # ------------------
   # Helpers
   # ------------------
 
@@ -249,7 +416,9 @@ class ShowbotWeb < Sinatra::Base
     end
 
     def suggestion_set_hr(suggestion_set)
-      "<h2 class='show_break'>#{show_title_for_slug(suggestion_set.slug)}</h2>"
+      html = ''
+      html << "<h2 class='show_break'>"
+      html << "#{show_title_for_slug(suggestion_set.slug)}</h2>"
     end
 
     def link_to_vote_up(suggestion)

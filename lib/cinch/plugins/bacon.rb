@@ -1,7 +1,11 @@
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class Bacon
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /bacon$/i,        :method => :command_bacon       # !bacon
       match /bacon\s+(\S+)/i, :method => :command_bacon_gift  # !bacon <user>

@@ -1,9 +1,12 @@
 require 'chronic_duration'
+require 'cinch/cooldown'
 
 module Cinch
   module Plugins
     class Uptime
       include Cinch::Plugin
+
+      enforce_cooldown
 
       match /uptime/i,  :method => :command_uptime  # !uptime
 

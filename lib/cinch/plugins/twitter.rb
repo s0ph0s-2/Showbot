@@ -1,8 +1,12 @@
 # A Cinch plugin for broadcasting Twitter updates to an IRC channel
+require 'cinch/cooldown'
+
 module Cinch
   module Plugins
     class Twitter
       include Cinch::Plugin
+
+      enforce_cooldown
 
       listen_to :connect,   :method => :on_connect
 
