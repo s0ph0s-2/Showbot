@@ -5,6 +5,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/local/showbot/Showbot/start.sh
+User=showbot
 
 [Install]
 WantedBy=multi-user.target
