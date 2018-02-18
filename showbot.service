@@ -1,0 +1,10 @@
+[Unit]
+Description=Showbot IRC bot
+Documentation=https://github.com/rikai/Showbot
+After=network.target
+
+[Service]
+ExecStart=/usr/local/showbot/Showbot/start.sh
+
+[Install]
+WantedBy=multi-user.target
