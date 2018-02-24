@@ -48,6 +48,48 @@ commands instead:
  * `bundle`
  * `foreman run rake db:migrate`
 
+### Setup on Arch Linux
+
+* Install MariaDB and create a new user: `showbot`
+* Set that user's password to something secure
+* Install NGINX
+* Use NGINX to obtain a LetsEncrypt certificate for the domain you're running
+  Showbot on
+* Install [this NGINX config snippet][nginx]
+* Create a `showbot` user on the server. Ensure that `showbot` cannot log in,
+  and set their home directory to `/usr/local/showbot`
+* `pacman -Syu`
+* `sudo -u showbot $SHELL`, and remain in that shell from here on out
+* `cd`
+* `git clone https://github.com/s0ph0s-2/Showbot.git`
+* `cd Showbot`
+* Get RVM's key: `gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3`
+* Install RVM: `curl -sSL https://get.rvm.io | bash -s stable`
+* Activate RVM: `source /usr/local/showbot/.rvm/scripts/rvm`
+* Install Ruby version 2.1.2 (out of date, but we haven't migrated to a newer
+  version yet. If you'd like to help fix our dependency hell, please submit a
+  PR!): `rvm install ruby-2.1.2`
+* Wait for Ruby to compile :(
+* `rvm 2.1.2 exec gem install bundler`
+* `rvm 2.1.2 exec bundle install`
+* `cp .env.example .env`
+* Update `.env` to reflect the proper database configuration and live URLs
+* `cp cinchize.yml.example cinchize.yml`
+* Update `cinchize.yml` to reflect the proper bot configuration and disable any
+  unwanted plugins
+* Modify `public/data.json` to reflect the shows you'll be using Showbot for
+* `foreman run rake db:migrate`
+* Copy `showbot.service` into your Systemd services directory
+* Test to ensure Showbot runs by executing `./start.sh /path/to/logfile.log`
+* `exit`
+* Reload your Systemd daemons, then start and enable `showbot.service`
+
+Be aware that the simple start script doesn't do any sort of log rotation, so
+you will rapidly accumulate a very large log file (Showbot is needlessly
+verbose).
+
+[nginx]: https://github.com/s0ph0s-2/Showbot/
+
 ### Configuring JBot
 
 For JBot to work correctly, you need to set up your `.env` file in the root of
